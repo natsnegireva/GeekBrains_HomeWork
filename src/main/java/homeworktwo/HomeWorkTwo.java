@@ -100,6 +100,16 @@ public class HomeWorkTwo {
         } else {
             return false;
         }
+        // Второй вариант - если сумма элементов масива будет четным значением, то true, нечетным false
+            int sumarr = 0;
+            for (int i = 0; i < balanceArr.length; ++i) {
+                sumarr += balanceArr[i];
+            }
+            if (sumarr % 2 == 0) {
+                return true;
+            } else {
+                return false;
+            }
     }
 
     // 7 - Написать метод, которому на вход подается одномерный массив и число n (может быть положительным, или отрицательным),
