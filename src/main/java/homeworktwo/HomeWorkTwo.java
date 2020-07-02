@@ -57,7 +57,7 @@ public class HomeWorkTwo {
         int[][] squarearr = new int[10][10];
         for (int i = 0; i < squarearr.length; i++) {
             for (int j = 0; j < 10; j++) {
-                if (i == j) {
+                if (i == j || squarearray.length - i == j + 1) {
                     squarearr[i][j] = 1;
                 } else {
                     squarearr[i][j] = 0;
