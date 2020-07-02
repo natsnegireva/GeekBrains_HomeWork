@@ -1,5 +1,5 @@
 package homeworkone;
-public class Main {
+public class HomeWorkOne {
     // Задание 2 : Создать переменные всех пройденных типов данных, и инициализировать их значения
     static byte m = 1;
     static short y = 2;
