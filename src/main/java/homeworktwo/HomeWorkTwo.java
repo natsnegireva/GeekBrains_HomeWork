@@ -6,10 +6,10 @@ public class HomeWorkTwo {
 
 
     public static void main(String[] args) {
+
     }
 
     // 1 - Задать целочисленный массив, состоящий из элементов 0 и 1. С помощью цикла и условия заменить 0 на 1, 1 на 0;
-
     public static void oneZeroArray() {
         int[] arr = {1, 1, 0, 0, 1, 0, 1, 1, 0, 0};
         for (int i = 0; i < arr.length; i++) {
@@ -56,8 +56,8 @@ public class HomeWorkTwo {
     public static void squareArray() {
         int[][] squarearr = new int[10][10];
         for (int i = 0; i < squarearr.length; i++) {
-            for (int j = 0; j < 10; j++) {
-                if (i == j || squarearray.length - i == j + 1) {
+            for (int j = 0; j < squarearr.length; j++) {
+                if (i == j || squarearr.length - i == j + 1) {
                     squarearr[i][j] = 1;
                 } else {
                     squarearr[i][j] = 0;
@@ -70,7 +70,7 @@ public class HomeWorkTwo {
     public static void minMaxArray() {
         int[] minmaxarr = {8, 5, 3, 2, 11, 4, 5, 2, 0, 7, 9, -8, -5, -3, -2, -22, -4, -5, 0, -7, 8};
         int minvalue = minmaxarr[0];
-        int maxvalue = minmaxarr[1];
+        int maxvalue = minmaxarr[0];
         for (int i : minmaxarr) {
             if (i < minvalue) {
                 minvalue = i;
@@ -85,23 +85,23 @@ public class HomeWorkTwo {
     // Примеры: checkBalance([2, 2, 2, 1, 2, 2, || 10, 1]) → true,
     // checkBalance([1, 1, 1, || 2, 1]) → true, граница показана символами ||, эти символы в массив не входят.
     static boolean checkBalanceArray(int[] balanceArr) {
-        int startpoint = 0;
-        int endpoint = 0;
-        while (startpoint != endpoint) {
-            for (int i = 0; i < balanceArr.length; i++) {
-                startpoint = startpoint + balanceArr[i];
-                for (int j = balanceArr.length - 1; j >= 0; j--) {
-                    endpoint = endpoint + balanceArr[j];
-                }
-            }
-        }
-        if (startpoint == endpoint) {
-            return true;
-        } else {
-            return false;
-        }
-        // Второй вариант - если сумма элементов масива будет четным значением, то true, нечетным false
-            int sumarr = 0;
+        int startPoint = 0;
+        int endPoint = 0;
+//        while (startPoint != endPoint) {
+//            for (int i = 0; i < balanceArr.length; i++) {
+//                startPoint = startPoint + balanceArr[i];
+//                for (int j = balanceArr.length - 1; j >= 0; j--) {
+//                    endPoint = endPoint + balanceArr[j];
+//                }
+//            }
+//        }
+//        if (startPoint == endPoint) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+        //Второй вариант - если сумма элементов масива будет четным значением, то true, нечетным false
+           int sumarr = 0;
             for (int i = 0; i < balanceArr.length; ++i) {
                 sumarr += balanceArr[i];
             }
@@ -110,6 +110,7 @@ public class HomeWorkTwo {
             } else {
                 return false;
             }
+        }
     }
 
     // 7 - Написать метод, которому на вход подается одномерный массив и число n (может быть положительным, или отрицательным),
@@ -123,9 +124,10 @@ public class HomeWorkTwo {
         if (step > 0) {
             for (int i = 0; i < step; i++) {
                 tmp = movearr[0];
-                for (int j = 0; j < movearr.length - 1; j++)
+                for (int j = 0; j < movearr.length - 1; j++) {
                     movearr[j] = movearr[j + 1];
-                movearr[movearr.length - 1] = tmp;
+                    movearr[movearr.length - 1] = tmp;
+                }
             }
         } else if (step < 0) {
             for (int i = 0; i > step; i--) {
@@ -136,6 +138,8 @@ public class HomeWorkTwo {
             }
         }
     }
+    // комментарии к 7 заданию
+    // if (i == j || i > j - squarearray.length) {squarearray[i][j] = i;} - запонит массив последовательно одинаковыми числами в одной строке
 }
 
 
