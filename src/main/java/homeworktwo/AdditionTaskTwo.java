@@ -19,7 +19,6 @@ public class AdditionTaskTwo {
 
         for (int i = 0; i < n * n; i++) { // по количеству элементов в массиве определяем границу
             SpiralArr[rowArray][colArray] = i + 1; // начальное значение движения до n
-            // если нечем заполнять,
             if (--walkWay == 0) {
                 walkWay = SpiralArr.length * (dirChanges % 2) + SpiralArr.length * ((dirChanges + 1) % 2) - (dirChanges / 2 - 1) - 2;
                 int tempVariable = dx;
