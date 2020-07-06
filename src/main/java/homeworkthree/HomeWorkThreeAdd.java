@@ -26,6 +26,8 @@ public class HomeWorkThreeAdd {
         String str = WordsArr[randomWord];
         char result = str.charAt(0);
         char result1 = str.charAt(1);
+        char result2 = str.charAt(2);
+        char result3 = str.charAt(3);
         System.out.println("Угадайте слово " + result + " " + result1 + " #############");
 
         while (true) {
@@ -33,8 +35,16 @@ public class HomeWorkThreeAdd {
             if (str.equals(inputWord)) {
                 System.out.println("Вы угадали. Сыграем еще!");
                 GuessWord();
-            } else {
-                System.out.println("Вы не угадали. ");
+            }  else {
+                System.out.println("Угадайте слово " + result + " " + result1 + " " + result2 + " " + result3 + " ###########");
+                String inputWord2 = scanner.next();
+                if (str.equals(inputWord2)) {
+                    System.out.println("Вы угадали. Сыграем еще!");
+                    GuessWord();
+                } else {
+                    System.out.println("Вы не угадали. ");
+                    break;
+                }
             }
         }
     }
