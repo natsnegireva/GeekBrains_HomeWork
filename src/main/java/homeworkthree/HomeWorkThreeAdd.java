@@ -3,7 +3,7 @@ package homeworkthree;
 import java.util.Random;
 import java.util.Scanner;
 
-public class HomeWorkThreeAdd {
+class HomeWorkThreeAdd {
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -16,7 +16,7 @@ public class HomeWorkThreeAdd {
     // запрашивает ответ у пользователя, сравнивает его с загаданным словом и сообщает правильно ли
     // ответил пользователь. Играем до тех пор, пока игрок не отгадает слово.
     // Вариант 1
-    public static void GuessWord() {
+    static void GuessWord() {
         String[] WordsArr = {"apple", "orange", "lemon", "banana", "apricot", "avocado",
                 "broccoli", "carrot", "cherry", "garlic", "grape", "melon", "leak", "kiwi",
                 "mango", "mushroom", "nut", "olive", "pea", "peanut", "pear", "pepper", "pineapple",
@@ -51,7 +51,7 @@ public class HomeWorkThreeAdd {
       // Вариант 2
       // Если слово не угадано, компьютер показывает буквы которые стоят на своих местах
 
-//    public static void GuessWord() {
+//        static void GuessWord() {
 //        String[] WordsArr = {"apple", "orange", "lemon", "banana", "apricot", "avocado",
 //                "broccoli", "carrot", "cherry", "garlic", "grape", "melon", "leak", "kiwi",
 //                "mango", "mushroom", "nut", "olive", "pea", "peanut", "pear", "pepper", "pineapple",
