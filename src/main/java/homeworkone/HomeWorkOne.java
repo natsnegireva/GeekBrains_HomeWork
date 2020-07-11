@@ -1,5 +1,5 @@
 package homeworkone;
-public class HomeWorkOne {
+class HomeWorkOne {
     // Задание 2 : Создать переменные всех пройденных типов данных, и инициализировать их значения
     static byte m = 1;
     static short y = 2;
@@ -11,7 +11,7 @@ public class HomeWorkOne {
     static boolean bool = true;
     String s = "Максим";
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         System.out.println("Задание 3 - " + calc(14, 11, 12, 13));
         diap(4, 7);
         comp(-9);

@@ -1,6 +1,6 @@
 package homeworktwo;
 
-public class AdditionTaskTwo {
+class AdditionTaskTwo {
 
     public static void main(String[] args) {
         spiralArray(7);
@@ -8,7 +8,7 @@ public class AdditionTaskTwo {
     }
 
     // Заполнение квадратного массива по спирали (начало верхняя левая точка).
-    public static void spiralArray(int n) {
+    static void spiralArray(int n) {
         int[][] SpiralArr = new int[n][n];
         int rowArray = 0; // иницмализируем переменную для строк
         int colArray = 0; // иницмализируем переменную для колонок
@@ -39,7 +39,7 @@ public class AdditionTaskTwo {
     }
 
     // Заполнение квадратного массива по спирали из центра массива при помощи case
-    public static void centerSpiralArr(int n) {
+    static void centerSpiralArr(int n) {
         int[][] CSpiralArr = new int[n][n];
         // устанавливаем центр
         int i = n / 2;
@@ -50,7 +50,7 @@ public class AdditionTaskTwo {
         int min_j = j;
         int max_j = j; // вверх вниз
         int d = 0; // устанавливаем движение влево
-        for (int a = 1; a < (n * n)+1; a++) {
+        for (int a = 1; a < (n * n) + 1; a++) {
             CSpiralArr[i][j] = a;
             switch (d) {
                 case 0:
