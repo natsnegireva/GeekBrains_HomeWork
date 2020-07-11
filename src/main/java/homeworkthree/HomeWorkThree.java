@@ -2,7 +2,7 @@ package homeworkthree;
 
 import java.util.Scanner;
 
-public class HomeWorkThree {
+class HomeWorkThree {
 
     static Scanner scanner = new Scanner(System.in);
     static int range = 9;
@@ -18,7 +18,7 @@ public class HomeWorkThree {
     // После победы или проигрыша выводится запрос – «Повторить игру еще раз?
     // 1 – да / 0 – нет»(1 – повторить, 0 – нет).
 
-    public static void ScanerTest(int range) {
+    static void ScanerTest(int range) {
         System.out.println("Введите число от 0 до " + range + ", у вас есть 3 попытки");
         int randomNumber = (int) (Math.random() * range); // сгенерирует случайное не отрицательное число до range
         for (int count = 0; count < 3; count++) {
