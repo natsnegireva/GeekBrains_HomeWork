@@ -36,6 +36,7 @@ public class Plate {
         } else {
             System.out.println(input_number + " - Это не еда");
         }
+        sc.close();
     }
 
     public int getFood() {
