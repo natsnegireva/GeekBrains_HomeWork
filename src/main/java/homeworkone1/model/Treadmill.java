@@ -1,6 +1,6 @@
-package homework1;
+package homeworkone1.model;
 
-public class Treadmill extends Mechanics {
+public class Treadmill{
     private int length;
 
     public Treadmill(int length) {

@@ -1,10 +1,10 @@
-package homework1;
+package homeworkone1.model;
 
-public class Obstacle extends Mechanics{
+public class Obstacle {
     private int height;
 
     public Obstacle (int height) {
-       this.height = height;
+        this.height = height;
     }
 
     public int getHeight() {
