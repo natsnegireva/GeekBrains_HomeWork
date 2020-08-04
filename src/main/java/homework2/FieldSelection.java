@@ -3,13 +3,10 @@ package homework2;
 import java.util.Arrays;
 
 class FieldSelection {
-    private final String[][] myArray;
-    private int sum;
-    private int j;
+    private String[][] myArray;
 
     public FieldSelection(String[][] myArray) {
         this.myArray = myArray;
-        this.sum = sum;
     }
 
     // распечатать массив
@@ -33,24 +30,12 @@ class FieldSelection {
         System.out.println();
     }
 
-
-    // просуммировать количество элементов
-    public void sumArrayIndex(String[][] myArray) {
-        int sum = 0;
-        for (String[] str : myArray) {
-            str = myArray[j];
-            int num = Integer.parseInt(str[j]);
-            sum += num;
-        }
-        System.out.println(sum);
+    public String[][] getmyArray() {
+        return myArray;
     }
 
-    public int getSum() {
-        return sum;
-    }
-
-    public void setSum(int maxrun) {
-        this.sum = sum;
+    public void setmyArray(String[][] myArray) {
+        this.myArray = myArray;
     }
 }
 
