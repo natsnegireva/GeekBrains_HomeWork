@@ -1,11 +1,16 @@
 package homework2;
 
-public class MyArraySizeException extends Throwable {
-    // при подаче массива другого размера необходимо бросить исключение MyArraySizeException
+public class MyArraySizeException extends Exception {
+    String Message;
+
+    public MyArraySizeException() {
+        super();
+    }
 
     @Override
-    public void printStackTrace() {
-        super.printStackTrace();
+    public String getMessage() {
+        return Message;
     }
+
 
 }

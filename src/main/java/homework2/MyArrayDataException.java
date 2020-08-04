@@ -1,9 +1,12 @@
 package homework2;
 
-public class MyArrayDataException extends IllegalArgumentException {
-// должно быть брошено исключение MyArrayDataException, с детализацией в какой именно ячейке лежат неверные данные
+public class MyArrayDataException extends IllegalArgumentException{
 
-    public MyArrayDataException(String message, Throwable cause) {
-        super(message, cause);
+    public MyArrayDataException() {
+        super();
     }
+    public void printError(String s) {
+        System.out.println("Не удалось приведение типов, ошибка в ячейке " + s);
+    }
+
 }
