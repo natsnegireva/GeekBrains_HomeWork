@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+        <?import javafx.geometry.*?>
+        <?import javafx.scene.*?>
+        <?import javafx.scene.control.*?>
+        <?import javafx.scene.effect.*?>
+        <?import javafx.scene.layout.*?>
+        <?import javafx.scene.text.*?>
+
+<VBox alignment="center" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="sample.Controller">
+<TextArea fx:id="mainTextAreaChat" cacheShape="false" centerShape="false" disable="true" editable="false"
+          focusTraversable="false" prefHeight="345.0" prefWidth="478.0" promptText="Окно чата" scaleShape="false"
+          VBox.vgrow="ALWAYS">
+    <font>
+        <Font name="System Italic" size="18.0"/>
+    </font>
+</TextArea>
+<TextArea fx:id="mainText" onKeyPressed="#enterPressed" centerShape="false" mouseTransparent="true"
+          nodeOrientation="LEFT_TO_RIGHT" prefHeight="98.0" prefWidth="478.0" promptText="Введи какой-то текст ..."
+          wrapText="true" VBox.vgrow="ALWAYS">
+    <font>
+        <Font size="20.0"/>
+    </font>
+    <cursor>
+        <Cursor fx:constant="TEXT"/>
+    </cursor>
+    <effect>
+        <Lighting bumpInput="$null" diffuseConstant="2.0" specularConstant="0.0" specularExponent="40.0"
+                  surfaceScale="0.0">
+            <light>
+                <Light.Distant/>
+            </light>
+        </Lighting>
+    </effect>
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
+</TextArea>
+<HBox alignment="CENTER">
+    <Button fx:id="mainTextAreaEnter" onAction="#btnOneClickAction" contentDisplay="CENTER" defaultButton="true"
+            depthTest="ENABLE" lineSpacing="30.0" text="ОТПРАВЬ СООБЩЕНИЕ" textFill="WHITE" textOverrun="CLIP"
+            wrapText="true" VBox.vgrow="ALWAYS">
+        <VBox.margin>
+            <Insets bottom="5.0" top="5.0"/>
+        </VBox.margin>
+        <font>
+            <Font name="System Bold" size="18.0"/>
+        </font>
+        <opaqueInsets>
+            <Insets/>
+        </opaqueInsets>
+        <HBox.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+        </HBox.margin>
+    </Button>
+    <Button fx:id="mainTextAreaClrar" onAction="#btnOneClickActionC" alignment="TOP_RIGHT" contentDisplay="CENTER"
+            lineSpacing="30.0" text="УДАЛИ СООБЩЕНИЕ" textAlignment="RIGHT" textFill="WHITE" textOverrun="CLIP"
+            wrapText="true" VBox.vgrow="ALWAYS">
+        <VBox.margin>
+            <Insets bottom="5.0" top="5.0"/>
+        </VBox.margin>
+        <font>
+            <Font name="System Bold" size="18.0"/>
+        </font>
+        <opaqueInsets>
+            <Insets/>
+        </opaqueInsets>
+        <HBox.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+        </HBox.margin>
+    </Button>
+    <opaqueInsets>
+        <Insets/>
+    </opaqueInsets>
+</HBox>
+</VBox>
