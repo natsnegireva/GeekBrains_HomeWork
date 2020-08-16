@@ -12,11 +12,6 @@ public class Main {
         WordArray.UniqueWords(words);
         WordArray.CountWords(words);
 
-        Contacts.add("Fedor", "8234887654");
-        Contacts.add("Max", "8584454252");
-        Contacts.add("Igor", "84542662544");
-        Contacts.get("Sveta");
-
     }
 }
 
