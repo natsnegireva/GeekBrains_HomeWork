@@ -1,4 +1,4 @@
-package homeworkone1.model;
+package homework1.model;
 
 public class Treadmill{
     private int length;

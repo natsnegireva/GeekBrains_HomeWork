@@ -1,6 +1,6 @@
-package homeworkone1.interfaces;
+package homework1.interfaces;
 
-import homeworkone1.model.*;
+import homework1.model.*;
 
 public interface RobotService {
 

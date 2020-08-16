@@ -1,7 +1,7 @@
-package homeworkone1.services;
+package homework1.services;
 
-import homeworkone1.model.Obstacle;
-import homeworkone1.model.Treadmill;
+import homework1.model.Obstacle;
+import homework1.model.Treadmill;
 
 public class ActionServiceImpl {
     public int getTreadmillLength(Treadmill treadmill) {

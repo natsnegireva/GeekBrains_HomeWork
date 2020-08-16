@@ -1,7 +1,7 @@
-package homeworkone1.services;
+package homework1.services;
 
-import homeworkone1.interfaces.RobotService;
-import homeworkone1.model.*;
+import homework1.interfaces.RobotService;
+import homework1.model.*;
 
 public class RobotServiceImpl implements RobotService {
     ActionServiceImpl actionService; // передаем получение значений Дорожки и Стены

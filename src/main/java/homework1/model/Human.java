@@ -1,14 +1,13 @@
-package homeworkone1.model;
+package homework1.model;
 
-public class Cat  {
+public class Human {
     private int maxrun;
     private int maxjump;
 
-    public Cat(int maxrun, int maxjump) {
+    public Human(int maxrun, int maxjump) {
         this.maxjump = maxjump;
         this.maxrun = maxrun;
     }
-
     public int getMaxrun() {
         return maxrun;
     }
@@ -24,5 +23,4 @@ public class Cat  {
     public void setMaxjump(int maxjump) {
         this.maxjump = maxjump;
     }
-
 }
