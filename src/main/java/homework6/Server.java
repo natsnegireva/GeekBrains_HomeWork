@@ -34,8 +34,7 @@ public class Server {
                         }
                         dos.println(msg);
                     }
-            });
-            thread.setDaemon(true);
+            });            
             thread.start();
 
             while (true) {
