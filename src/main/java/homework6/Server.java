@@ -46,7 +46,7 @@ public class Server {
                     break;
                 }
             }
-            sc.close();
+            sc.close(); // Поправка когда клиент отключается, то на сервере сканер не должен закрываться 
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
