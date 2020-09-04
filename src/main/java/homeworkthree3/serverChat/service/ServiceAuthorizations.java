@@ -16,7 +16,7 @@ public class ServiceAuthorizations implements AuthService {
     // логин-пароль-ник, поиск осуществляется перебором списка записей.
     // Сервис авторизации доработан для использования с базой данных
 
-    // ДОБАВЛЕНЫ МЕТОДЫ УДАЛЕНИЯ ПО НИКУ, ЗАМЕНА НИКА, ПОЛУЧЕНИЕ ПО НИКУ,
+    // ДОБАВЛЕНЫ МЕТОДЫ УДАЛЕНИЯ ПО НИКУ, ЗАМЕНА НИКА, ПОЛУЧЕНИЕ ПО НИКУ, START-STOP
     private static Bdconn bdconn;
     private static PreparedStatement ps = null;
     private List<NewUser> usersList;
@@ -139,9 +139,9 @@ public class ServiceAuthorizations implements AuthService {
         return null;
     }
 
-
     @Override
     public void start() throws SQLException {
+        Bdconn.getInstance().connection();
         System.out.println( "Сервис аутентификации запущен" );
         NewUser user = new NewUser(); // создаем нового пользователя
         addUser( user ); // добавляем пользователя в БД
@@ -151,7 +151,10 @@ public class ServiceAuthorizations implements AuthService {
     @Override
     public void stop() {
         System.out.println( "Сервис аутентификации остановлен" );
+        try {
+            Bdconn.getInstance().connection().close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-
-
 }
