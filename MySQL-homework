@@ -1,0 +1,734 @@
+> из коммандной строки к mysql:
+
+-h ip -- коннект к субд по ип
+-P port -- коннект по выбранному порту
+mysql dbname -- открыть дб
+
+команды mysql (клиента):
+\u или USE --  выбор базы данных
+\. или SOURCE -- выполнение sql-комманд из файла
+\! или SYSTEM -- выполнение комманд ОС
+\s или STATUS -- вывод информации о состоянии сервера
+\q или EXIT -- выход ищ клиента
+\G -- вывод результата в вертикальном формате
+
+> дамп:
+--сделать дамп базы database и сохранить в файл database.sql:
+mysqldump database > database.sql
+
+--выгрузить дамп database.sql в базу database
+mysql database < database.sql
+
+> внутри бд
+CREATE DATABASE name; -- создание бд name
+SHOW DATABASES; -- показать все базы
+DROP DATABASE name; -- удалить базу
+IF EXISTS -- или IF NOT EXISTS можно использовать проверку внутри удаления/создания, пример:
+CREATE DATABASE IF NOT EXISTS shop;
+SHOW TABLES FROM dbname; -- показать таблицы. FROM dbname не нужно, если используется USE dbname (команда клиента mysql)
+SELECT mysql.User.User, mysql.User.Host FROM mysql.User; -- mysql.User - имя бд и таблицы, столбцы user и host. Полные имена = квалифицированные имена
+CREATE TABLE IF NOT EXISTS users(k INT); -- создать таблицу users со столбцом k, в котором значения будут int
+DESCRIBE table_name 'column_name'; -- посмотреть содержимое таблицы колонки column_name, если не использовать 'column_name', то покажет всю таблицу. Можно использовать 'm%' - выведет все столбцы, начинающиеся на m	
+SELECT * FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'shop';
+ALTER TABLE tbl CHANGE id id INT UNSIGNED NOT NULL; -- изменить атрибуты столбца id 
+TRUNCATE tbl; -- очистить таблицу
+-- если имя столбца/таблицы и т.д. совпадает с ключевым словом, можно экранировать `anything`, кавычку внутри кавычек можно экранировать \' 'dasfasdf \'sad\' '
+ALTER TABLE tbl ADD collect JSON; -- добавить столбец коллекция, тип json
+
+
+----------------Атрибуты для столбцов
+NULL или NOT NULL - позволяет элементам принимать null или запрещает
+DEFAULT - по умолчанию
+UNSIGNED - позволяет хранить только беззнаковые числа
+ZEROFILL - заменит пробелы перед числом нулями (например 0000005)
+PRIMARY KEY - первичный ключ, может быть 1, можно указать среди столбцов при создании: 
+--CREATE...(...,PRIMARY KEY(column_name1, ciolumn_name2(10)),...) -- первичный ключ по column_name1 и первым 10 символам column_name2
+SERIAL == BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE
+KEY - индекс
+
+
+
+-----------------Типы:
+Числовые
+Целочисленные: TINYINT (1B), SMALLINT(2B), MEDIUMINT(3B), INT(4B), BIGINT(8B)
+Вещественные: FLOAT(4B), DOUBLE(8B)
+Точные: DECIMAL (строка, в которой записано число) -- медленное обращение
+
+Строковые
+Фиксированные: CHAR (сразу надо выделить память и именно столько они занимать и будут)
+Переменные: VARCHAR (не имеет фиксированного размера, доспукается указание максимального объема в круглых скобках)
+BLOB: TINYTEXT (256B), TEXT(65536B), MEDIUMTEXT(16777216B == 16MB), LONGTEXT(4GB) --медленнее, чем варчар 
+
+Неизвестный
+NULL
+
+Календарные
+TIME(время в течении суток), 
+YEAR(год), 
+DATE(дата с точностью до дня), 
+DATETIME(дата и время), 
+TIMESTAMP(дата и время, в 2раза меньше места (1970-2038)
+
+1B	YEAR 		0000
+3B	DATE		'0000-00-00'
+3B	TIME		'00:00:00'
+4B	TIMESTAMP	'0000-00-00 00:00:00'
+8B	DATETIME	'0000-00-00 00:00:00'
+
+Множества?
+
+
+
+
+Пример числовых:
+
+CREATE TABLE tbl (id INT(8)); -- 8 символов
+INSERT INTO tbl VALUES (5);
+SELECT * FROM tbl;
+
+	DROP TABLES IF EXISTS tbl;
+	CREATE TABLE tbl (id INT(8) ZEROFILL);
+	INSERT INTO tbl VALUES (5);
+	SELECT * FROM tbl;
+	
+DROP TABLES IF EXISTS tbl;
+CREATE TABLE tbl (price DECIMAL(7,4)); --7B под число, 4B под дробную часть
+INSERT INTO tbl VALUES (111.2);
+INSERT INTO tbl VALUES (10000); -- уже не влезет
+
+Пример строковых:
+CREATE TABLE tbl (
+	name CHAR(10) DEFAULT 'anonymous',
+	description VARCHAR(255)
+);
+
+INSERT INTO tbl VALUES (DEFAULT, 'Новый пользователь');
+SELECT * FROM tbl;
+INSERT INTO tbl VALUES ('очень длинное имя', 'Новый пользователь'); -- ошибка, слишком длинное имя. Символ русского текста - 2 байта (иногда 3-4 байта)
+
+Пример даты:
+
+SELECT '2018-10-01 0:00:00' - INTERVAL 1 DAY; -- вычли 1 день из 2018-10-01
+SELECT '2018-10-01 0:00:00' + INTERVAL 1 WEEK;
+SELECT '2018-10-01 0:00:00' + INTERVAL 1 YEAR;
+SELECT '2018-10-01 0:00:00' + INTERVAL '1-1' YEAR_MONTH; -- прибавили год и 1 месяц
+
+
+Пример множеств:
+
+ALTER TABLE tbl ADD collect JSON; -- добавить столбец коллекция, тип json
+INSERT INTO tbl VALUES(1, '{"first": "Hello", "second": "World"}');
+
+SELECT collect->>"$.second" FROM tbl;
+/*
++----------------------+
+| collect->>"$.second" |
++----------------------+
+| World                |
++----------------------+
+*/
+
+--- ----------------------- Индексы
+/*
++:скорость поиска (изначально данные несортированы, индексация создаст сортированную копию столбца)
+-:долго добавлять/удалять, больше памяти занимает на жд и озу
+*/
+Индексы:
+- обычные
+- уникальные, первичный ключ
+- полнотекстовый 
+
+Пример уникального:
+
+CREATE...(...,KEY index_of_catalog_id(catalog_id)),...) -- индексирует колонку catalog_id, в базе индекс будет называться index_of_catalog_id
+-- создать индекс в существующей таблице:
+CREATE INDEX index_of_catalog_id ON products (catalog_id);
+-- удалить: 
+DROP INDEX index_of_catalog_id ON products;
+
+--может храниться в виде бинарного дерева или хэш. При создании можно принудительно указать тип:
+CREATE INDEX index_of_catalog_id USING BTREE ON products (catalog_id);
+CREATE INDEX index_of_catalog_id USING HASH ON products (catalog_id);
+
+--Составные индексы (может быть несколько):
+    KEY order_id (order_id, product_id),
+    KEY product_id (product_id, order_id)
+	
+	
+UNIQUE unique_name(name(10)) -- индексация по первым 10 символам
+	
+------------------------ CRUD опреации (create, read, update, delete)
+
+-- INSERT INTO catalogs VALUES(NULL, 'Процессоры');
+-- INSERT INTO catalogs (name, id) VALUES ('Мат. платы', NULL);
+-- INSERT INTO catalogs VALUES (DEFAULT 'Видеокарты');
+
+INSERT IGNORE INTO catalogs VALUES  -- игнор ошибки, при уникальном значени name должна вылетить ошибка на второй строчке с видеокартами, но эта вставка просто игнорируется
+	(DEFAULT, 'Процессоры'),
+	(DEFAULT, 'Мат. платы'),
+	(DEFAULT, 'Видеокарты'),
+	(DEFAULT, 'Видеокарты');
+    
+SELECT id, name from catalogs;
+
+DELETE -- удаляет все или часть данных
+TRUNCATE -- чистит таблицу, обнуляет автоинкремент
+
+DELETE FROM catalogs WHERE id > 1 LIMIT 1; -- удалит 1 значение, при условии, что id >1
+
+
+
+UPDATE 
+	catalogs
+SET
+	name = "Процессоры (Intel)"
+WHERE
+	name = "Процессоры";
+	
+
+INSERT INTO
+	cat
+SELECT
+	* 
+FROM
+	catalogs
+ON DUPLICATE KEY UPDATE
+	new_column_name = VALUES(old_column_name);
+
+
+-- -----------------Арифметические операторы
++-*/%
+div - целочисленное деление
+
+любое действие с NULL - вернёт NULL
+
+SELECT 5 div 3 AS division; -- AS - переименовывает заглавие столбца
+/*
++----------+
+| division |
++----------+
+|        1 |
++----------+
+*/
+
+-- CREATE TABLE IF NOT EXISTS catalogs(id INT, name TEXT);
+INSERT INTO catalogs VALUES (1, 'Процессоры'); -- добавить строку
+-- INSERT INTO catalogs VALUES (2, 'Мат. платы');
+-- INSERT INTO catalogs VALUES (3, 'Видеокарты');
+UPDATE catalogs SET id = id + 10; -- добавить всем id 10
+-- всё приводиться к инту. Т.е. если строка не может быть приведена к числу - она равна 0
+SELECT 'asda' + 'gdfgbcv2' AS summ;
+/*
++------+
+| summ |
++------+
+|    0 |
++------+
+*/
+SELECT !TRUE, NOT TRUE, !FALSE, TRUE; -- NOT или ! - отрицание, тру и фолс определяются, как 1 и 0
+/*
++-------+----------+--------+------+
+| !TRUE | NOT TRUE | !FALSE | TRUE |
++-------+----------+--------+------+
+|     0 |        0 |      1 |    1 |
++-------+----------+--------+------+
+*/
+
+SELECT 2 <=> NULL, NULL <=> NULL, 2 = NULL, NULL = NULL; -- <=> - безопасное сравнение с null
+SELECT 2 IS NULL, 2 IS NOT NULL;
+
+/*
++------------+---------------+----------+-------------+
+| 2 <=> NULL | NULL <=> NULL | 2 = NULL | NULL = NULL |
++------------+---------------+----------+-------------+
+|          0 |             1 |     NULL |        NULL |
++------------+---------------+----------+-------------+
++-----------+---------------+
+| 2 IS NULL | 2 IS NOT NULL |
++-----------+---------------+
+|         0 |             1 |
++-----------+---------------+
+*/
+
+-- DROP TABLE IF EXISTS catalogs;
+-- CREATE TABLE IF NOT EXISTS catalogs(id INT PRIMARY KEY AUTO_INCREMENT, name varchar(255));
+-- INSERT INTO catalogs VALUES('Сетевое оборудование');
+-- INSERT INTO catalogs VALUES(2, NULL);
+SELECT * FROM catalogs WHERE name IS NOT NULL;
+/*
++----+----------------------+
+| id | name                 |
++----+----------------------+
+|  1 | Сетевое оборудование |
++----+----------------------+
+*/
+-- -----------------Логические операции-------
+AND, &&
+OR, ||
+
+ CREATE TABLE tbl (
+    -> x INT,
+    -> y INT,
+    -> summ INT AS (x+y)
+    -> );
+
+INSERT INTO tbl (x, y) VALUES (1, 1), (5, 6), (11, 12);
+/*
++------+------+------+
+| x    | y    | summ |
++------+------+------+
+|    1 |    1 |    2 |
+|    5 |    6 |   11 |
+|   11 |   12 |   23 |
++------+------+------+
+*/
+-- по умолчанию summ не будет сохранятся на жд, можно добавить сторед в параметр столбца, чтоб сохранялось: summ INT AS (x+y) STORED);
+
+-- ------------------- Условная выборка
+
+SELECT * FROM catalogs WHERE id > 2 AND id <= 4;
+SELECT * FROM catalogs WHERE id BETWEEN 3 AND 4; -- аналогично верхнему, есть ещё NOT BETWEEN
+SELECT * FROM catalogs WHERE id IN (1, 2, 5); -- если внутри списка будет NULL, вернёт null, есть ещё NOT IN
+LIKE и = -- есть ещё not like,  выполняют одну и ту же функцию, но у LIKE есть спецсимволы:
+% -- любое кол-во символов или их отсутствие
+_ -- ровно 1 символ
+
+RLIKE 
+REGEXP -- регулярные выражения
+SELECT 'программирование' RLIKE '^грам', 'граммпластинка' RLIKE '^грам'; -- ^ начинается с, $ - заканчивается на, | - или, [abc] - a или b или c.
+-- есть классы, например цифры , пишутся в двойных квадратных скобках [[:digit:]]
+-- квантификаторы  ? - символ входит 0 или 1 раз, * -  любое кол-во вхождений, включая 0, + - одно или более вхождений
+-- описание цены: 
+--SELECT 342.50 RLIKE '^[0-9]*\\.[0-9]{2}$' AS '342.50';
+/*
++----------------------------------+--------------------------------+
+| 'программирование' RLIKE '^грам' | 'граммпластинка' RLIKE '^грам' |
++----------------------------------+--------------------------------+
+|                                0 |                              1 |
++----------------------------------+--------------------------------+
++--------+
+| 342.50 |
++--------+
+|      1 |
++--------+
+*/
+
+----------------- Сортировка
+
+SELECT * FROM catalogs ORDER BY name; -- сортировка по имени
+SELECT * FROM catalogs ORDER BY name DESC; -- сортировка по имени в обратном порядке
+select id, catalog_id, price, name FROM products ORDER BY catalog_id, price; -- сортировка по цене в пределах каталога
+
+select id, catalog_id, price, name FROM products LIMIT 4, 2; -- начиная с 4й позиции покажет 2 результата
+select id, catalog_id, price, name FROM products LIMIT 2 OFFSET 4; -- альтернативная запись
+select DISTINCT catalog_id FROM products; -- выведет только уникальные значения 
+select id, catalog_id, price, name FROM products WHERE catalog_id = 2 AND price	> 5000; -- выведет только уникальные значения 
+UPDATE products SET price = price * 0.9 WHERE catalog_id = 2 AND price> 5000; -- уменьшить цену на 10%, в каталоге с ид 2 и ценой > 5000
+DELETE FROM products ORDER BY price DESC LIMIT 2;
+
+
+------------------ Предопределенные функции
+SELECT NOW(); -- текущее время
+SELECT name, DATE(created_at), DATE(updated_at) FROM users WHERE name = 'Александр'; -- преобразование даты к дню (без времени)
+-- чтобы выглядело лучше, столбцы переименовываются с пом. as, но его можно пропустить: 
+SELECT id, name, birthday_at, DATE(created_at) as created_at, DATE(updated_at) updated_at FROM users;
+
+-- форматирование:
+
+SELECT DATE_FORMAT('2018-06-12 01:59:59', 'На дворе %Y год');
+/*
++-------------------------------------------------------+
+| DATE_FORMAT('2018-06-12 01:59:59', 'На дворе %Y год') |
++-------------------------------------------------------+
+| На дворе 2018 год                                     |
++-------------------------------------------------------+
+*/
+SELECT name, DATE_FORMAT(birthday_at, '%d.%m.%Y') AS birthday_at FROM users;
+
+-- unix timestamp
+SELECT UNIX_TIMESTAMP('2018-10-10') as TIMESTAMP,
+	FROM_UNIXTIME(1539155363) AS DATETIME;
+	
+/*
++------------+---------------------+
+| TIMESTAMP  | DATETIME            |
++------------+---------------------+
+| 1539118800 | 2018-10-10 10:09:23 |
++------------+---------------------+
+*/
+
+SELECT name, FLOOR((TO_DAYS(NOW()) - TO_DAYS(birthday_at)) / 365.25) as age FROM users; -- TO_DAYS - преобразование даты к дням, FLOOR - округление
+SELECT name, TIMESTAMPDIFF(YEAR, birthday_at, NOW()) as age FROM users; -- TIMESTAMPDIFF - считает разницу во времени
+
+-- random
+
+SELECT * FROM users ORDER BY RAND(); -- вывести в случайном порядке
+SELECT VERSION(); -- версия сервера mysql
+SELECT LAST_INSERT_ID(); -- покажет последнее значение автоинкремента
+SELECT DATABASE(); -- текущая БД
+SELECT USER(); -- вернет текущего пользователя
+/*
++----------------+
+| USER()         |
++----------------+
+| root@localhost |
++----------------+
+*/
+
+SELECT RAND(); -- случайное число от 0 до 1
+...distance DOUBLE AS (SQRT(POW(x1 - x1, 2) + POW(y1 - y2, 2)))... -- POW - возведение в сетепень, sqrt - корень
+SIN() -- синус
+ROUND() - математическое округление
+CEILING() - округляет в большую сторону	
+FLOOR() - округляет в меньшую сторону	
+SELECT id, SUBSTRING(name, 1, 5) as name FROM users; -- вывод первых 5ти символов. 1 - позиция, откуда начинаем резать, 5 - кол-во символов
+SELECT id, CONCAT(name, ' ', TIMESTAMPDIFF(YEAR, birthday_at, NOW())) AS name FROM users; -- соединение строк
+SELECT IF(TRUE, 'истина', 'ложь'), IF(FALSE, 'истина', 'ложь'); -- 1-й параметр - выражение, 2-й - если правда, 3 -й действие, если ложь)
+SELECT INET_ATON('62.145.69.10'), INET_ATON('127.0.0.1'); -- перевод ip  в число
+SELECT INET_NTOA(1049707786), INET_NTOA('2130706433'); -- перевод числа в ip
+SELECT UUID(); -- универсальный уникальный идентификатор, всегда генереруется разное
+
+
+---- примеры:
+CREATE TABLE distances (
+	id SERIAL PRIMARY KEY,
+	x1 INT NOT NULL,
+	y1 INT NOT NULL,
+	x2 INT NOT NULL,
+	y2 INT NOT NULL,
+	distance DOUBLE AS (SQRT(POW(x1 - x1, 2) + POW(y1 - y2, 2))) -- POW - возведение в сетепень, sqrt - корень
+) COMMENT = "Расстояние между 2мя точками"; 
+
+INSERT INTO distances
+  (x1, y1, x2, y2)
+VALUES
+  (1, 1, 4, 5),
+  (4, -1, 3, 2),
+  (-2, 5, 1, 3);
+
+/*
++----+----+----+----+----+----------+
+| id | x1 | y1 | x2 | y2 | distance |
++----+----+----+----+----+----------+
+|  1 |  1 |  1 |  4 |  5 |        4 |
+|  2 |  4 | -1 |  3 |  2 |        3 |
+|  3 | -2 |  5 |  1 |  3 |        2 |
++----+----+----+----+----+----------+
+*/
+
+CREATE TABLE distances (
+	id SERIAL PRIMARY KEY,
+	a JSON NOT NULL,
+	b JSON NOT NULL,
+	distance DOUBLE AS (SQRT(POW(a->>'$.x' - b->>'$.x', 2) + POW(a->>'$.y' - b->>'$.y', 2))) 
+) COMMENT = "Расстояние между 2мя точками"; 
+
+INSERT INTO distances (a, b) VALUES 
+	('{"x": 1, "y":1}', '{"x": 4, "y": 5}'),
+	('{"x": 4, "y":-1}', '{"x": 3, "y": 2}'),
+	('{"x": -2, "y":5}', '{"x": 1, "y": 3}');
+
+
+CREATE TABLE triangles(
+	id SERIAL PRIMARY KEY,
+	a DOUBLE NOT NULL comment 'сторона треугольника',
+	b DOUBLE NOT NULL comment 'сторона треугольника',
+	angle INT NOT NULL COMMENT 'угол треугольника в градусах',
+	square DOUBLE AS (a * b * SIN(RADIANS(angle)) / 2.0)  -- RADIANS - преобразование к радианам
+)COMMENT = 'площадь треугольника';
+
+ALTER TABLE triangles CHANGE square square DOUBLE AS (ROUND(a * b * SIN(RADIANS(angle)) / 2.0, 4)); -- ROUND(..., x) - математическое округление до x знаков
+
+INSERT INTO
+  triangles (a, b, angle)
+VALUES
+  (1.414, 1, 45),
+  (2.707, 2.104, 60),
+  (2.088, 2.112, 56),
+  (5.014, 2.304, 23),
+  (3.482, 4.708, 38);
+
+SELECT * FROM triangles;
+
+CREATE TABLE rainbow (
+	id SERIAL PRIMARY KEY,
+	color VARCHAR(255)
+) comment = 'Цвета радуги';
+
+INSERT INTO
+  rainbow (color)
+VALUES
+  ('red'),
+  ('orange'),
+  ('yellow'),
+  ('green'),
+  ('blue'),
+  ('indigo'),
+  ('violet');
+
+SELECT
+  CASE
+	WHEN color = 'red' THEN 'красный'
+	WHEN color = 'orange' THEN 'оранжевый'
+	WHEN color = 'yellow' THEN 'желтый'
+	WHEN color = 'green' THEN 'зеленый'
+	WHEN color = 'blue' THEN 'голубой'
+	WHEN color = 'indigo' THEN 'синий'
+	ELSE 'фиолетовый'
+  END AS russian
+FROM
+  rainbow;
+
+------------------ агрегация данных
+
+SELECT catalog_id from products GROUP BY catalog_id; 
+SELECT COUNT(*), SUBSTRING(birthday_at, 1, 3) AS decade FROM users GROUP BY decade; -- count считает поля таблицы, в скобочках можно указать имя стобца (NULL пропускается) или *. * - будет считать поля всей таблицы вне зависимости от null. 
+SELECT
+	GROUP_CONCAT(name ORDER BY name DESC SEPARATOR ' '), -- separator можно не использовать, по умолчанию ','. order by name desc тоже можно не использовать
+	SUBSTRING(birthday_at, 1, 3) AS decade 
+FROM 
+	users 
+GROUP BY 
+	decade;
+
+MIN(); -- минимальное значение
+MAX(); -- максимальное значение
+AVG(); -- среднее
+SUM(); -- сумма всех значений, кроме NULL
+
+-- c GROUP BY нельзя использовать WHERE, вместо этого можно использовать HAVING
+SELECT COUNT(*) AS total, SUBSTRING(birthday_at, 1, 3) as decade FROM users GROUP BY decade HAVING total >= 2;
+
+WITH ROLLUP; -- суммирует значения последней строкой для агрегатных функций, для столбцов будет NULL
+
+ANY_VALUE() -- выбирает любое значение из группы (когда не важно значение)
+
+
+
+-- примеры
+SELECT SUBSTRING(birthday_at, 1, 3) AS decade FROM users GROUP BY decade;
+
+DROP TABLE IF EXISTS tbl;
+CREATE TABLE tbl (
+	id INT NOT NULL,
+	value INT DEFAULT NULL
+);
+
+INSERT INTO tbl VALUES (1, 230);
+INSERT INTO tbl VALUES (2, NULL);
+INSERT INTO tbl VALUES (3, 405);
+INSERT INTO tbl VALUES (4, NULL);
+
+SELECT COUNT(id), COUNT(value) FROM tbl;
+/*
++-----------+--------------+
+| COUNT(id) | COUNT(value) |
++-----------+--------------+
+|         4 |            2 |
++-----------+--------------+
+*/
+ SELECT COUNT(*) FROM tbl;
+ /*
++----------+
+| COUNT(*) |
++----------+
+|        4 |
++----------+
+*/
+
+SELECT MIN(price) as min, MAX(price) as max FROM products;
+SELECT catalog_id, MIN(price) as min, MAX(price) as max FROM products GROUP BY catalog_id;
+/*
++------------+---------+----------+
+| catalog_id | min     | max      |
++------------+---------+----------+
+|          1 | 4780.00 | 12700.00 |
+|          2 | 4790.00 | 19310.00 |
++------------+---------+----------+
+*/
+
+SELECT AVG(price) FROM products;
+/*+-------------+
+| AVG(price)  |
++-------------+
+| 8807.142857 |
+*/
+
+SELECT 
+	catalog_id,
+	ROUND(AVG(price), 2)AS price
+FROM
+	products
+GROUP BY
+	catalog_id;
+	
+	
+SELECT 
+	catalog_id,
+	ROUND(AVG(price)*1.2, 2)AS price  -- +20%
+FROM
+	products
+GROUP BY
+	catalog_id;
+	
+
+-- 2 раза вставил специально, работа с дублями
+TRUNCATE products;
+INSERT INTO products
+  (name, description, price, catalog_id)
+VALUES
+  ('Intel Core i3-8100', 'Процессор Intel', 7890.00, 1),
+  ('Intel Core i5-7400', 'Процессор Intel', 12700.00, 1),
+  ('AMD FX-8320E', 'Процессор AMD', 4780.00, 1),
+  ('AMD FX-8320', 'Процессор AMD', 7120.00, 1),
+  ('ASUS ROG MAXIMUS X HERO', 'Z370, Socket 1151-V2, DDR4, ATX', 19310.00, 2),
+  ('Gigabyte H310M S2H', 'H310, Socket 1151-V2, DDR4, mATX', 4790.00, 2),
+  ('MSI B250M GAMING PRO', 'B250, Socket 1151, DDR4, mATX', 5060.00, 2);
+ 
+INSERT INTO products
+  (name, description, price, catalog_id)
+VALUES
+  ('Intel Core i3-8100', 'Процессор Intel', 7890.00, 1),
+  ('Intel Core i5-7400', 'Процессор Intel', 12700.00, 1),
+  ('AMD FX-8320E', 'Процессор AMD', 4780.00, 1),
+  ('AMD FX-8320', 'Процессор AMD', 7120.00, 1),
+  ('ASUS ROG MAXIMUS X HERO', 'Z370, Socket 1151-V2, DDR4, ATX', 19310.00, 2),
+  ('Gigabyte H310M S2H', 'H310, Socket 1151-V2, DDR4, mATX', 4790.00, 2),
+  ('MSI B250M GAMING PRO', 'B250, Socket 1151, DDR4, mATX', 5060.00, 2);
+
+SELECT name, description, price, catalog_id FROM products GROUP BY name, description, price, catalog_id; -- уникальности добились с пом. group by, для того, чтобы попасть в группу, все значения должны совпадать
+
+DROP TABLE IF EXISTS products_new;
+CREATE TABLE products_new(
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(255) COMMENT 'название',
+	description TEXT COMMENT 'описание',
+	price DECIMAL(11,2) COMMENT 'цена',
+	catalog_id INT UNSIGNED, 
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP comment 'дата регистрации',
+	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    KEY index_of_catalog_id(catalog_id)
+) COMMENT = 'Товарные позицые';
+
+INSERT INTO 
+	products_new
+SELECT 
+	NULL, name, description, price, catalog_id, NOW(), NOW()
+FROM 
+	products 
+GROUP BY 
+	name, description, price, catalog_id;
+
+DROP TABLE IF EXISTS products;
+ALTER TABLE products_new RENAME products;
+----------------------------
+
+
+INSERT INTO users (name, birthday_at) VALUES
+  ('Светлана', '1988-02-04'),
+  ('Олег', '1998-03-20'),
+  ('Юлия', '2006-07-12');
+
+SELECT name, birthday_at FROM users ORDER BY birthday_at;
+SELECT YEAR(birthday_at) FROM users ORDER BY birthday_at;
+SELECT YEAR(birthday_at) AS birthday_year FROM users GROUP BY birthday_year ORDER BY birthday_year;
+SELECT MAX(name), YEAR(birthday_at) AS birthday_year FROM users GROUP BY birthday_year ORDER BY birthday_year; -- просто name не выведет, т.к. там группа, нужно агрегационное значение, использовали макс
+SELECT ANY_VALUE(name), YEAR(birthday_at) AS birthday_year FROM users GROUP BY birthday_year ORDER BY birthday_year; -- уместнее использовать ANY_VALUE
+---------------------------------
+SELECT
+  SUBSTRING(birthday_at, 1, 3) AS decade,
+  COUNT(*)
+FROM
+  users
+GROUP BY
+  decade
+WITH ROLLUP; -- (суммирует значения последней строкой)
+
+----------- многотабличные запросы
+
+UNION -- медленные 
+вложенные: SELECT id, <SUBQUERY> FROM <SUBQUERY> WHERE <SUBQUERY> GROUP BY id HAVING <SUBQUERY>; --  <SUBQUERY> - вложенный запрос
+JOIN
+
+ALL -- с дублями
+DISTINCT -- без дублей
+
+
+-- в select по умолчанию вставляется ALL (показывать с дублями)
+-- в union по умолчанию вставляется DISTINCT (без дублей)
+
+IN -- поиск в последовательности
+ANY -- любой, можно использовать SOME ( используется логика ИЛИ)
+ALL -- все(используется логика И)
+
+EXISTS -- существуют
+ROW -- строка
+
+
+---Примеры:
+-- union
+CREATE TABLE rubrics (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(255) comment 'Название раздела'
+	) comment = 'разделы инет магаза';
+	
+INSERT INTO rubrics (name) VALUES ('Видеокарты'), ('Память');
+
+SELECT name FROM catalogs UNION SELECT name FROM rubrics; -- соеденит без дублей. если нужно с дублями - UNION ALL
+
+-- чтобы сортировка и limit работали на отдельные таблицы, а не на результирующую, надо взять в круглые скобки):
+(SELECT name FROM catalogs ORDER BY name DESC LIMIT 2)
+UNION ALL
+(SELECT name FROM rubrics ORDER BY name DESC LIMIT 2);
+---------------------------------
+SELECT 
+	id, name, catalog_id 
+FROM 
+	products
+WHERE
+	catalog_id = (SELECT id FROM catalogs WHERE name = "Процессоры");
+	
+SELECT 
+	id, name, catalog_id 
+FROM 
+	products
+WHERE
+	price = (SELECT MAX(price) FROM products);
+
+SELECT 
+	id,
+	name,
+	(SELECT name FROM catalogs WHERE id = catalog_id) as 'catalog_id'
+FROM
+	products;
+	/* Если подзапрос использует столбец из внешнего запроса, его называют коррелированным. 
+  Особенность коррелированных запросов — СУБД вынуждена их вычислять для каждой строки внешнего запроса. 
+  Это может быть довольно накладно для объемных таблиц. Источник: https://docs.google.com/document/d/1Poq5YUiWTSOUFtkC9GXNtwtO9Xwt5q1eH5FiGGcexUM/edit#*/
+--------------
+SELECT id, name, catalog_id
+FROM products
+WHERE catalog_id in (SELECT id FROM catalogs);
+
+
+SELECT id, name, price, catalog_id
+FROM products
+WHERE catalog_id = 2 AND
+	price < ANY(SELECT price FROM products WHERE catalog_id = 1); -- выведет все процессы, которые дешевле какого-то из материнок
+	
+SELECT id, name, price, catalog_id
+FROM products
+WHERE catalog_id = 2 AND
+	price > ALL(SELECT price FROM products WHERE catalog_id = 1); -- выведет все мамки, которые дороже любого процессора
+	
+SELECT * FROM catalogs WHERE EXISTS (SELECT * FROM products where catalog_id  = catalogs.id); -- извлечь каталоги, где есть товарные позиции
+SELECT * FROM catalogs WHERE NOT EXISTS (SELECT 1 FROM products where catalog_id  = catalogs.id); -- извлечь каталоги, где нет товарных позиций (используется 1 вместо * для ускорения работы запроса).
+
+SELECT id, name, price, catalog_id FROM products
+WHERE ROW(catalog_id, 5060) IN (SELECT id, price FROM catalogs);
+
+создание нового пользователя user_new в базе geodata с паролем qwerty
+DROP USER EXISTS 'user_new'@'localhost';
+CREATE USER 'user_new'@'localhost' IDENTIFIED WITH sha256_password BY 'qwerty';
+
+назначение прав на чтение
+GRANT SELECT ON geodata.* TO 'user_new'@'localhost';
