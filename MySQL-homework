@@ -726,9 +726,48 @@ SELECT * FROM catalogs WHERE NOT EXISTS (SELECT 1 FROM products where catalog_id
 SELECT id, name, price, catalog_id FROM products
 WHERE ROW(catalog_id, 5060) IN (SELECT id, price FROM catalogs);
 
-создание нового пользователя user_new в базе geodata с паролем qwerty
-DROP USER EXISTS 'user_new'@'localhost';
+====================================================================
+
+
+
+======================================================================1
+удалили если такой пользователь есть
+DROP USER IF EXISTS 'user_new'@'localhost';
+
+создали user_new с паролем qwerty
 CREATE USER 'user_new'@'localhost' IDENTIFIED WITH sha256_password BY 'qwerty';
 
-назначение прав на чтение
+права только на чтение
 GRANT SELECT ON geodata.* TO 'user_new'@'localhost';
+
+обновили состояние прав доступа
+FLUSH PRIVILEGES;
+
+--------------------или дали все права
+
+GRANT SELECT ON *.* TO 'user_new1'@'localhost';
+
+--------------------или только на чтение и просмотр вьюшек
+
+GRANT SELECT, SHOW VIEW ON geodata.* TO 'user_new'@'localhost';
+
+
+======================================================================2
+
+резервная копия базы
+mysqldump -uroot -p******* geodata › geodata_dump1.sql
+
+восстановление базы из бекапа
+mysql -uroot -p******* my_db geodata ‹ geodata_dump1.sql
+
+резерная копия нескольких бд
+mysqldump -uroot -p******* –databases geodata test › my_db_backup.sql
+
+
+
+
+
+
+
+
+
